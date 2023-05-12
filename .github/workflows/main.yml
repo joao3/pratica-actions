@@ -1,5 +1,4 @@
-
-name: Python application test
+name: python_test
 
 on: [pull_request]
 
