@@ -1,1 +1,54 @@
 
+name: Python application test
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Cache Python environment
+      uses: actions/cache@v2
+      with:
+        path: venv
+        key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-venv-
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Cache Python environment
+      uses: actions/cache@v2
+      with:
+        path: venv
+        key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-venv-
+
+    - name: Run tests
+      run: |
+        source venv/bin/activate
+        python -m unittest discover
